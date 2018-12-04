@@ -21,19 +21,12 @@ flags.DEFINE_string('data_dir',    'data',   "Data directory")
 flags.DEFINE_string('model_dir',   'models', "Directory to output the result")
 flags.DEFINE_integer('epoch',      100,      "Number of epochs")
 flags.DEFINE_integer('batch_size', 64,       "Number of batch size")
-flags.DEFINE_integer('embed_size', 256,      "Number of embed(word vector) size")
-flags.DEFINE_integer('decode_max_size', 15,
-                     """Decoding processing is terminated when EOS did output,
-                        but output the maximum vocabulary number when it did not output""")
 FLAGS = flags.FLAGS
 
 
 def main(_):
     try: os.makedirs(FLAGS.model_dir)
     except: pass
-
-    lr_reducer = ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6)
-    early_stopper = EarlyStopping(min_delta=0.001, patience=10)
 
     batch_size = 32
     nb_classes = 10
@@ -68,6 +61,10 @@ def main(_):
                   optimizer='adam',
                   metrics=['accuracy'])
 
+    callbacks = list()
+    callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6))
+    callbacks.append(EarlyStopping(min_delta=0.001, patience=10))
+
     if not data_augmentation:
         print('Not using data augmentation.')
         model.fit(X_train, Y_train,
@@ -75,7 +72,7 @@ def main(_):
                   nb_epoch=nb_epoch,
                   validation_data=(X_test, Y_test),
                   shuffle=True,
-                  callbacks=[lr_reducer, early_stopper])
+                  callbacks=callbacks)
     else:
         print('Using real-time data augmentation.')
         # This will do preprocessing and realtime data augmentation:
@@ -100,7 +97,7 @@ def main(_):
                             steps_per_epoch=X_train.shape[0] // batch_size,
                             validation_data=(X_test, Y_test),
                             epochs=nb_epoch, verbose=1, max_queue_size=100,
-                            callbacks=[lr_reducer, early_stopper])
+                            callbacks=callbacks)
 
 
 if __name__ == '__main__':
