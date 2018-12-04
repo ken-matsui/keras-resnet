@@ -156,7 +156,6 @@ def _get_block(identifier):
 def resnet(input_shape, num_outputs, block_fn, repetitions):
     if len(input_shape) != 3:
         raise Exception("Input shape should be a tuple (nb_channels, nb_rows, nb_cols)")
-    input_shape = (input_shape[1], input_shape[2], input_shape[0])  # when backend is tf
 
     input = Input(shape=input_shape)
     conv1 = _conv_bn_relu(filters=64, kernel_size=(7, 7), strides=(2, 2))(input)
@@ -167,8 +166,8 @@ def resnet(input_shape, num_outputs, block_fn, repetitions):
     block = pool1
     filters = 64
     for i, r in enumerate(repetitions):
-        block = _residual_block(block_fn, filters=filters,
-                                repetitions=r, is_first_layer=(i==0))(block)
+        block = _residual_block(block_fn, filters=filters, repetitions=r,
+                                is_first_layer=(i == 0))(block)
         filters *= 2
 
     # Last activation
@@ -179,8 +178,8 @@ def resnet(input_shape, num_outputs, block_fn, repetitions):
     pool2 = AveragePooling2D(pool_size=(block_shape[ROW_AXIS], block_shape[COL_AXIS]),
                              strides=(1, 1))(block)
     flatten1 = Flatten()(pool2)
-    dense = Dense(units=num_outputs, kernel_initializer="he_normal",
-                  activation="softmax")(flatten1)
+    dense = Dense(num_outputs, kernel_initializer="he_normal",
+                  activation="sigmoid")(flatten1)
 
     model = Model(inputs=input, outputs=dense)
     return model

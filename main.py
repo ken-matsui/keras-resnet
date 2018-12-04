@@ -1,103 +1,90 @@
 # coding: utf-8
 
 import os
-# from glob import glob
-# from os.path import relpath, splitext
 
 import tensorflow as tf
-from tensorflow.python.keras.datasets import cifar10
 from tensorflow.python.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.python.keras.utils import np_utils
-from tensorflow.python.keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from tensorflow.python.keras.callbacks import ReduceLROnPlateau, EarlyStopping, TensorBoard
 from tensorflow.python.keras.utils import plot_model
 import numpy as np
 
-from model import resnet_34
+from resnet import resnet_152
 
 
 flags = tf.flags
 flags.DEFINE_string('phase',       'train',  "train or test")
 flags.DEFINE_string('data_dir',    'data',   "Data directory")
 flags.DEFINE_string('model_dir',   'models', "Directory to output the result")
-flags.DEFINE_integer('epoch',      100,      "Number of epochs")
-flags.DEFINE_integer('batch_size', 64,       "Number of batch size")
+flags.DEFINE_integer('epoch',      200,      "Number of epochs")
+flags.DEFINE_integer('batch_size', 32,       "Number of batch size")
 FLAGS = flags.FLAGS
 
 
 def main(_):
-    try: os.makedirs(FLAGS.model_dir)
-    except: pass
-
-    batch_size = 32
-    nb_classes = 10
-    nb_epoch = 200
-    data_augmentation = True
-
     # input image dimensions
-    img_rows, img_cols = 32, 32
-    # The CIFAR10 images are RGB.
+    img_rows, img_cols = 250, 250
+    # Images are RGB.
     img_channels = 3
 
-    # The data, shuffled and split between train and test sets:
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
-
-    # Convert class vectors to binary class matrices.
-    Y_train = np_utils.to_categorical(y_train, nb_classes)
-    Y_test = np_utils.to_categorical(y_test, nb_classes)
-
-    X_train = X_train.astype('float32')
-    X_test = X_test.astype('float32')
-
-    # subtract mean and normalize
-    mean_image = np.mean(X_train, axis=0)
-    X_train -= mean_image
-    X_test -= mean_image
-    X_train /= 128.
-    X_test /= 128.
-
-    model = resnet_34((img_channels, img_rows, img_cols), nb_classes)
-    plot_model(model, to_file='model.png', show_shapes=True)
-    model.compile(loss='categorical_crossentropy',
+    # channel last -> (~/.keras/keras.json)
+    model = resnet_152((img_rows, img_cols, img_channels), 1)  # Binary classification
+    # plot_model(model, to_file='model.png', show_shapes=True)
+    model.compile(loss='binary_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
 
     callbacks = list()
-    callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6))
+    callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0,
+                                       patience=5, min_lr=0.5e-6))
     callbacks.append(EarlyStopping(min_delta=0.001, patience=10))
+    callbacks.append(TensorBoard(batch_size=FLAGS.batch_size))
 
-    if not data_augmentation:
-        print('Not using data augmentation.')
-        model.fit(X_train, Y_train,
-                  batch_size=batch_size,
-                  nb_epoch=nb_epoch,
-                  validation_data=(X_test, Y_test),
-                  shuffle=True,
-                  callbacks=callbacks)
-    else:
-        print('Using real-time data augmentation.')
-        # This will do preprocessing and realtime data augmentation:
-        datagen = ImageDataGenerator(
-            featurewise_center=False,  # set input mean to 0 over the dataset
-            samplewise_center=False,  # set each sample mean to 0
-            featurewise_std_normalization=False,  # divide inputs by std of the dataset
-            samplewise_std_normalization=False,  # divide each input by its std
-            zca_whitening=False,  # apply ZCA whitening
-            rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
-            width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
-            height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
-            horizontal_flip=True,  # randomly flip images
-            vertical_flip=False)  # randomly flip images
+    print('Using real-time data augmentation.')
+    # This will do preprocessing and realtime data augmentation:
+    train_datagen = ImageDataGenerator(
+        featurewise_center=False,  # set input mean to 0 over the dataset
+        samplewise_center=False,  # set each sample mean to 0
+        featurewise_std_normalization=False,  # divide inputs by std of the dataset
+        samplewise_std_normalization=False,  # divide each input by its std
+        zca_whitening=False,  # apply ZCA whitening
+        rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+        width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
+        height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
+        horizontal_flip=True,  # randomly flip images
+        vertical_flip=False,  # randomly flip images
+        validation_split=0.2)
 
-        # Compute quantities required for featurewise normalization
-        # (std, mean, and principal components if ZCA whitening is applied).
-        datagen.fit(X_train)
+    # Compute quantities required for featurewise normalization
+    # (std, mean, and principal components if ZCA whitening is applied).
+    train_data_dir = "../pipe-screenshot-10k"
+    train_generator = train_datagen.flow_from_directory(
+        train_data_dir,
+        target_size=(img_rows, img_cols),
+        class_mode='binary',
+        batch_size=FLAGS.batch_size,
+        subset='training')
+    validation_generator = train_datagen.flow_from_directory(
+        train_data_dir,
+        target_size=(img_rows, img_cols),
+        class_mode='binary',
+        batch_size=FLAGS.batch_size,
+        subset='validation')
 
-        # Fit the model on the batches generated by datagen.flow().
-        model.fit_generator(datagen.flow(X_train, Y_train, batch_size=batch_size),
-                            steps_per_epoch=X_train.shape[0] // batch_size,
-                            validation_data=(X_test, Y_test),
-                            epochs=nb_epoch, verbose=1, max_queue_size=100,
-                            callbacks=callbacks)
+    # Fit the model on the batches generated by datagen.flow().
+    steps_per_epoch = train_generator.n // FLAGS.batch_size
+    validation_steps = validation_generator.n // FLAGS.batch_size
+    model.fit_generator(train_generator,
+                        steps_per_epoch=steps_per_epoch,
+                        validation_data=validation_generator,
+                        validation_steps=validation_steps,
+                        epochs=FLAGS.epoch, verbose=1,
+                        callbacks=callbacks)
+
+    try:
+        os.makedirs(FLAGS.model_dir)
+    except:
+        pass
+    model.save(os.path.join(FLAGS.model_dir, str(FLAGS.epoch) + '.h5'))
 
 
 if __name__ == '__main__':
