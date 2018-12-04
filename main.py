@@ -8,7 +8,7 @@ import tensorflow as tf
 from tensorflow.python.keras.datasets import cifar10
 from tensorflow.python.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.utils import np_utils
-from tensorflow.python.keras.callbacks import ReduceLROnPlateau, CSVLogger, EarlyStopping
+from tensorflow.python.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.python.keras.utils import plot_model
 import numpy as np
 
@@ -100,7 +100,7 @@ def main(_):
                             steps_per_epoch=X_train.shape[0] // batch_size,
                             validation_data=(X_test, Y_test),
                             epochs=nb_epoch, verbose=1, max_queue_size=100,
-                            callbacks=[lr_reducer, early_stopper, csv_logger])
+                            callbacks=[lr_reducer, early_stopper])
 
 
 if __name__ == '__main__':
