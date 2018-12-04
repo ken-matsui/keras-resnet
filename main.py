@@ -29,7 +29,7 @@ def main(_):
     # channel last -> (~/.keras/keras.json)
     model = resnet_152((img_rows, img_cols, img_channels), 1)  # Binary classification
     # plot_model(model, to_file='model.png', show_shapes=True)
-    model.compile(loss='binary_crossentropy',
+    model.compile(loss='binary_crossentropy',  # when multiclass classification, loss is categorical_crossentropy
                   optimizer='adam',
                   metrics=['accuracy'])
 
