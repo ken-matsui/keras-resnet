@@ -8,7 +8,7 @@ from tensorflow.python.keras.callbacks import ReduceLROnPlateau, EarlyStopping, 
 from tensorflow.python.keras.utils import plot_model
 import numpy as np
 
-from resnet import resnet_152
+from resnet import resnet_50
 
 
 flags = tf.flags
@@ -22,20 +22,19 @@ FLAGS = flags.FLAGS
 
 def main(_):
     # input image dimensions
-    img_rows, img_cols = 250, 250
+    img_rows, img_cols = 400, 400
     # Images are RGB.
     img_channels = 3
 
     # channel last -> (~/.keras/keras.json)
-    model = resnet_152((img_rows, img_cols, img_channels), 1)  # Binary classification
+    model = resnet_50((img_rows, img_cols, img_channels), 1)  # Binary classification
     # plot_model(model, to_file='model.png', show_shapes=True)
     model.compile(loss='binary_crossentropy',  # when multiclass classification, loss is categorical_crossentropy
                   optimizer='adam',
                   metrics=['accuracy'])
 
     callbacks = list()
-    callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0,
-                                       patience=5, min_lr=0.5e-6))
+    callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6))
     callbacks.append(EarlyStopping(min_delta=0.001, patience=10))
     callbacks.append(TensorBoard(batch_size=FLAGS.batch_size))
 
@@ -79,6 +78,35 @@ def main(_):
                         validation_steps=validation_steps,
                         epochs=FLAGS.epoch, verbose=1,
                         callbacks=callbacks)
+
+    # cf. https://medium.com/@vijayabhaskar96/
+    # tutorial-image-classification-with-keras-flow-from-directory-and-generators-95f75ebe5720
+    test_generator = train_datagen.flow_from_directory(
+        "../pipe-screenshot-test",
+        target_size=(img_rows, img_cols),
+        class_mode=None,
+        batch_size=1,
+        shuffle=False)
+    # Need to reset the test_generator before
+    #  whenever you call the predict_generator.
+    # This is important, if you forget to reset
+    #  the test_generator you will get outputs in a weird order.
+    test_generator.reset()
+    pred = model.predict_generator(test_generator, verbose=1)
+    predicted_class_indices = np.argmax(pred, axis=1)
+
+    # Now predicted_class_indices has the predicted labels,
+    #  but you can’t simply tell what the predictions are,
+    #   because all you can see is numbers like 0,1,4,1,0,6…
+    # and most importantly you need to map the predicted
+    #  labels with their unique ids such as filenames to
+    #   find out what you predicted for which image.
+    labels = train_generator.class_indices
+    labels = dict((v, k) for k, v in labels.items())
+    predictions = [labels[k] for k in predicted_class_indices]
+    filenames = test_generator.filenames
+    print("filenames:", filenames)
+    print("predictions:", predictions)
 
     try:
         os.makedirs(FLAGS.model_dir)
