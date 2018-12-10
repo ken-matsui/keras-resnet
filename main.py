@@ -24,7 +24,7 @@ def main(_):
     # input image dimensions
     img_rows, img_cols = 400, 400
     # Images are RGB.
-    img_channels = 3
+    img_channels = 1
 
     # channel last -> (~/.keras/keras.json)
     model = resnet_50((img_rows, img_cols, img_channels), 7)  # Binary classification
