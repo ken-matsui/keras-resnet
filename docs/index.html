@@ -20,13 +20,9 @@
   </head>
   <body>
     <div class="container">
-      <h1 class="title">ResNet with TensorFlow.js</h1>
+      <h1 class="uk-heading-primary">ResNet</h1>
       <div class="box">
-        <input type="search" id="input_text" value=""/>
-        <a id="inference-button" class="button is-primary is-loading" onclick="inference()">Inference</a>
-        <div class="notification">
-          It can not be used because there is a privacy problem and the model size is abnormally large.
-        </div>
+        <button id="inference" class="uk-button uk-button-primary" onclick="inference()" disabled>Inference</button>
       </div>
     </div>
 
