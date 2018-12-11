@@ -19,7 +19,7 @@ def binarize(img):
         9,
         10)
     # cleaning noise by opening
-    kernel = np.ones((1, 1), np.uint8)
+    kernel = np.ones((1, 1), np.uint8)  # [[1]]
     th_red = cv2.morphologyEx(th_red, cv2.MORPH_OPEN, kernel)
 
     return th_red

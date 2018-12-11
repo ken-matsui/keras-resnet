@@ -19,16 +19,57 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.25/css/uikit.min.css" />
   </head>
   <body>
-    <div class="container">
-      <h1 class="uk-heading-primary">ResNet</h1>
-      <div class="box">
-        <button id="inference" class="uk-button uk-button-primary" onclick="inference()" disabled>Inference</button>
+    <div class="uk-container">
+      <h2 class="uk-text-lead">ResNet</h2>
+
+      <div class="uk-margin" uk-margin>
+        <div uk-form-custom="target: true">
+            <input id="file-input" type="file" style="cursor: copy">
+            <input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
+        </div>
       </div>
+
+      <button id="inference" class="uk-button uk-button-primary" onclick="inference()" disabled>Inference</button>
+
+      <img id="image-src" alt="No Image" style="width: 400px;height: 400px" />
+      <canvas id="canvas-output" style="width: 400px;height: 400px"></canvas>
+
+      <ul class="uk-list uk-list-divider">
+        <li>
+          <span>FBMessanger</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+        <li>
+          <span>Instagram</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+        <li>
+          <span>Invalid</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+        <li>
+          <span>LINE</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+        <li>
+          <span>Others</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+        <li>
+          <span>Pairs</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+        <li>
+          <span>Twitter</span>
+          <progress class="uk-progress accuracy" value="0.0" max="1.0"></progress>
+        </li>
+      </ul>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.25/js/uikit.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.25/js/uikit-icons.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
-    <script src="app.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.25/js/uikit.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.25/js/uikit-icons.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <script defer src="opencv.js"></script>
+    <script defer src="app.js"></script>
   </body>
 </html>
