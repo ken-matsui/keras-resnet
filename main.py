@@ -55,7 +55,7 @@ def main(_):
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
-    train_data_dir = "../multiclass-10k"
+    train_data_dir = "../multiclass-10k-binarize"
     train_generator = train_datagen.flow_from_directory(
         train_data_dir,
         target_size=(img_rows, img_cols),
@@ -84,8 +84,9 @@ def main(_):
     # cf. https://medium.com/@vijayabhaskar96/
     # tutorial-image-classification-with-keras-flow-from-directory-and-generators-95f75ebe5720
     test_generator = train_datagen.flow_from_directory(
-        "../pipe-screenshot-test",
+        "../pipe-screenshot-test-binarize",
         target_size=(img_rows, img_cols),
+        color_mode='grayscale',
         class_mode=None,
         batch_size=1,
         shuffle=False)
