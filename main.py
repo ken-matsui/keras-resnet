@@ -24,12 +24,12 @@ def main(_):
     # input image dimensions
     img_rows, img_cols = 400, 400
     # Images are RGB.
-    img_channels = 3
+    img_channels = 1
 
     # channel last -> (~/.keras/keras.json)
-    model = resnet_50((img_rows, img_cols, img_channels), 1)  # Binary classification
+    model = resnet_50((img_rows, img_cols, img_channels), 7)  # Binary classification
     # plot_model(model, to_file='model.png', show_shapes=True)
-    model.compile(loss='binary_crossentropy',  # when multiclass classification, loss is categorical_crossentropy
+    model.compile(loss='categorical_crossentropy',  # when multiclass classification, loss is categorical_crossentropy
                   optimizer='adam',
                   metrics=['accuracy'])
 
@@ -55,17 +55,19 @@ def main(_):
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
-    train_data_dir = "../pipe-screenshot-10k"
+    train_data_dir = "../multiclass-10k-binarize"
     train_generator = train_datagen.flow_from_directory(
         train_data_dir,
         target_size=(img_rows, img_cols),
-        class_mode='binary',
+        color_mode='grayscale',
+        class_mode='categorical',
         batch_size=FLAGS.batch_size,
         subset='training')
     validation_generator = train_datagen.flow_from_directory(
         train_data_dir,
         target_size=(img_rows, img_cols),
-        class_mode='binary',
+        color_mode='grayscale',
+        class_mode='categorical',
         batch_size=FLAGS.batch_size,
         subset='validation')
 
@@ -82,8 +84,9 @@ def main(_):
     # cf. https://medium.com/@vijayabhaskar96/
     # tutorial-image-classification-with-keras-flow-from-directory-and-generators-95f75ebe5720
     test_generator = train_datagen.flow_from_directory(
-        "../pipe-screenshot-test",
+        "../pipe-screenshot-test-binarize",
         target_size=(img_rows, img_cols),
+        color_mode='grayscale',
         class_mode=None,
         batch_size=1,
         shuffle=False)

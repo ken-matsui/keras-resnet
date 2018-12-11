@@ -179,7 +179,7 @@ def resnet(input_shape, num_outputs, block_fn, repetitions):
                              strides=(1, 1))(block)
     flatten1 = Flatten()(pool2)
     dense = Dense(num_outputs, kernel_initializer="he_normal",
-                  activation="sigmoid")(flatten1)  # when multiclass classification, activation is softmax
+                  activation="softmax")(flatten1)  # when multiclass classification, activation is softmax
 
     model = Model(inputs=input, outputs=dense)
     return model
