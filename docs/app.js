@@ -100,6 +100,7 @@ function reset_val() {
         el.setAttribute("value", String(0.0));
         c++;
     });
+    document.getElementById("image-src").removeAttribute("src");
 
     document.getElementById("reset").setAttribute("disabled", "");
 }
