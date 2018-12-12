@@ -9,11 +9,14 @@ tf.loadModel('./model/model.json')
         console.log(error);
     });
 
+let fileinfo;
 let imgElement = document.getElementById('image-src');
 let inputElement = document.getElementById('file-input');
 inputElement.addEventListener('change', (e) => {
-  imgElement.src = URL.createObjectURL(e.target.files[0]);
+    fileinfo = e.target.files[0];
+    imgElement.src = URL.createObjectURL(fileinfo);
 }, false);
+
 
 function binarize() {
     let mat = cv.imread(imgElement);
@@ -36,12 +39,14 @@ function binarize() {
     rgbaPlanes.delete();
 }
 
+
 const drawElement = document.getElementById('canvas-output');
 function getImageData() {
     const inputWidth = inputHeight = 400;
     let imageData = drawElement.getContext('2d').getImageData(0, 0, inputWidth, inputHeight);
     return imageData;
 }
+
 
 function getAccuracyScores(imageData) {
     const score = tf.tidy(() => {
@@ -59,6 +64,8 @@ function getAccuracyScores(imageData) {
 }
 
 function inference() {
+    document.getElementById("reset").removeAttribute("disabled");
+
     binarize();
     const imageData = getImageData();
     const accuracyScores = getAccuracyScores(imageData);
@@ -74,4 +81,18 @@ function inference() {
         el.setAttribute("value", String(accuracyScores[c]));
         c++;
     });
+}
+
+function reset_val() {
+    URL.revokeObjectURL(fileinfo);
+    const context = drawElement.getContext('2d');
+    context.clearRect(0, 0, drawElement.width, drawElement.height);
+    let c = 0;
+    const elements = document.querySelectorAll(".accuracy");
+    elements.forEach(el => {
+        el.setAttribute("value", String(0.0));
+        c++;
+    });
+
+    document.getElementById("reset").setAttribute("disabled", "");
 }
