@@ -55,7 +55,7 @@ function getAccuracyScores(imageData) {
         const channels = 1; // grayscale
         let input = tf.fromPixels(imageData, channels);
         // normalized
-        input = tf.cast(input, 'float32').div(tf.scalar(255));
+        input = tf.cast(input, 'float32');
         // reshape input format (shape: [batch_size, width, height, channels])
         input = input.expandDims();
         // predict
