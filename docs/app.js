@@ -22,7 +22,7 @@ function binarize() {
     let rgbaPlanes = new cv.MatVector();
 
     // binalize
-    cv.split(mat, rgbaPlanes);
+    cv.split(mat, rgbaPlanes); // red                green
     cv.addWeighted(rgbaPlanes.get(2), 0.5, rgbaPlanes.get(1), 0.5, 0, dst);
     cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 9, 10);
     cv.morphologyEx(dst, dst, cv.MORPH_OPEN, kernel);
