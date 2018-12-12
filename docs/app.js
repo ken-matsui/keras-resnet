@@ -19,6 +19,7 @@ inputElement.addEventListener('change', (e) => {
 
 
 function binarize() {
+    console.log(fileinfo);
     let mat = cv.imread(imgElement);
     var dst = new cv.Mat();
     let kernel = new cv.Mat.ones(new cv.Size(1, 1), cv.CV_8U);
@@ -40,8 +41,8 @@ function binarize() {
 }
 
 
-const drawElement = document.getElementById('canvas-output');
 function getImageData() {
+    const drawElement = document.getElementById('canvas-output');
     const inputWidth = inputHeight = 400;
     let imageData = drawElement.getContext('2d').getImageData(0, 0, inputWidth, inputHeight);
     return imageData;
@@ -85,6 +86,8 @@ function inference() {
 
 function reset_val() {
     URL.revokeObjectURL(fileinfo);
+
+    const drawElement = document.getElementById('canvas-output');
     const context = drawElement.getContext('2d');
     context.clearRect(0, 0, drawElement.width, drawElement.height);
     let c = 0;
