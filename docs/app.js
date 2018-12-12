@@ -82,9 +82,13 @@ function inference() {
         el.setAttribute("value", String(accuracyScores[c]));
         c++;
     });
+
+    document.getElementById("inference").setAttribute("disabled", "");
 }
 
 function reset_val() {
+    document.getElementById("inference").removeAttribute("disabled");
+
     URL.revokeObjectURL(fileinfo);
 
     const drawElement = document.getElementById('canvas-output');
