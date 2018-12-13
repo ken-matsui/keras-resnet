@@ -36,7 +36,11 @@ def main(_):
     callbacks = list()
     callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6))
     callbacks.append(EarlyStopping(min_delta=0.001, patience=10))
-    callbacks.append(TensorBoard(batch_size=FLAGS.batch_size))
+    callbacks.append(TensorBoard(histogram_freq=1,
+                                 write_graph=False,
+                                 write_grads=True,
+                                 write_images=True,
+                                 batch_size=FLAGS.batch_size))
 
     print('Using real-time data augmentation.')
     # This will do preprocessing and realtime data augmentation:
@@ -46,11 +50,11 @@ def main(_):
         featurewise_std_normalization=False,  # divide inputs by std of the dataset
         samplewise_std_normalization=False,  # divide each input by its std
         zca_whitening=False,  # apply ZCA whitening
-        rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
+        rotation_range=180,  # randomly rotate images in the range (degrees, 0 to 180)
         width_shift_range=0.1,  # randomly shift images horizontally (fraction of total width)
         height_shift_range=0.1,  # randomly shift images vertically (fraction of total height)
         horizontal_flip=True,  # randomly flip images
-        vertical_flip=False,  # randomly flip images
+        vertical_flip=True,  # randomly flip images
         validation_split=0.2)
 
     # Compute quantities required for featurewise normalization
