@@ -2,7 +2,8 @@
 let model;
 tf.loadModel('./model/model.json')
     .then(pretrainedModel => {
-        document.getElementById("inference").removeAttribute("disabled");
+        document.body.removeAttribute("style");
+        document.getElementById("uk-input").setAttribute("placeholder", "Select file");
         model = pretrainedModel;
     })
     .catch(error => {
@@ -15,6 +16,9 @@ let inputElement = document.getElementById('file-input');
 inputElement.addEventListener('change', (e) => {
     fileinfo = e.target.files[0];
     imgElement.src = URL.createObjectURL(fileinfo);
+
+    document.getElementById("inference").removeAttribute("disabled");
+    document.getElementById("inference").removeAttribute("style");
 }, false);
 
 
@@ -66,6 +70,7 @@ function getAccuracyScores(imageData) {
 
 function inference() {
     document.getElementById("reset").removeAttribute("disabled");
+    document.getElementById("reset").removeAttribute("style");
 
     binarize();
     const imageData = getImageData();
@@ -84,11 +89,10 @@ function inference() {
     });
 
     document.getElementById("inference").setAttribute("disabled", "");
+    document.getElementById("inference").setAttribute("style", "cursor:not-allowed");
 }
 
 function reset_val() {
-    document.getElementById("inference").removeAttribute("disabled");
-
     URL.revokeObjectURL(fileinfo);
 
     const drawElement = document.getElementById('canvas-output');
@@ -103,4 +107,5 @@ function reset_val() {
     document.getElementById("image-src").removeAttribute("src");
 
     document.getElementById("reset").setAttribute("disabled", "");
+    document.getElementById("reset").setAttribute("style", "cursor:not-allowed");
 }

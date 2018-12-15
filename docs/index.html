@@ -18,17 +18,17 @@
     <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/apple-touch-icon.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-rc.25/css/uikit.min.css" />
   </head>
-  <body>
+  <body style="cursor:wait">
     <div class="uk-flex uk-flex-center uk-margin-large-top">
       <div>
         <h2 class="uk-text-lead">ResNet</h2>
         <div uk-form-custom="target: true">
-          <input id="file-input" type="file" style="cursor: copy">
-          <input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
+          <input id="file-input" type="file" style="cursor:copy">
+          <input id="uk-input" class="uk-input uk-form-width-medium" type="text" placeholder="Loading..." disabled>
         </div>
         <div class="uk-margin-top uk-margin-bottom">
-          <button id="inference" class="uk-button uk-button-primary" onclick="inference()" disabled>Inference</button>
-          <button id="reset" class="uk-button uk-button-danger" onclick="reset_val()" disabled>Reset</button>
+          <button id="inference" class="uk-button uk-button-primary" onclick="inference()" style="cursor:not-allowed" disabled>Inference</button>
+          <button id="reset" class="uk-button uk-button-danger" onclick="reset_val()" style="cursor:not-allowed" disabled>Reset</button>
         </div>
         <div class="uk-align-left">
           <img id="image-src" alt="No Image" style="width:300px;height:300px" />
