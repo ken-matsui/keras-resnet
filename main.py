@@ -59,7 +59,7 @@ def main(_):
 
     # Compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied).
-    train_data_dir = "../multiclass-10k-binarize"
+    train_data_dir = "../multiclass-25k-binarize"
     train_generator = train_datagen.flow_from_directory(
         train_data_dir,
         target_size=(img_rows, img_cols),
