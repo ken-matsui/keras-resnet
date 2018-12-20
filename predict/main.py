@@ -17,7 +17,7 @@ graph = tf.get_default_graph()
 UPLOAD_DIR = "/tmp"
 
 
-@app.route('/predict', methods=['POST'])
+@app.route('/', methods=['POST'])
 def upload_multipart():
     if 'uploadFile' not in request.files:
         make_response(jsonify({'result': 'uploadFile is required.'}))
@@ -50,7 +50,7 @@ def upload_multipart():
 
         if predicted_class_indices != 2:
             return make_response("yes\n")
-        elif pred[2] > 0.95:
+        elif pred[2] > 0.96:
             return make_response("no\n")
         else:
             return make_response("maybe\n")
