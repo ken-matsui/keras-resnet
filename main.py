@@ -36,7 +36,7 @@ def main(_):
     callbacks = list()
     callbacks.append(ReduceLROnPlateau(factor=np.sqrt(0.1), cooldown=0, patience=5, min_lr=0.5e-6))
     callbacks.append(EarlyStopping(min_delta=0.001, patience=10))
-    callbacks.append(TensorBoard(histogram_freq=1,
+    callbacks.append(TensorBoard(histogram_freq=0,
                                  write_graph=False,
                                  write_grads=True,
                                  write_images=True,

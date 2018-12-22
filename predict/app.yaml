@@ -1,5 +1,5 @@
 runtime: custom
-service: predict
+service: predict-resnet
 env: flex
 entrypoint: gunicorn -b :$PORT main:app
 

@@ -78,7 +78,7 @@ function inference() {
     console.log(accuracyScores);
     const maxAccuracy = accuracyScores.indexOf(Math.max.apply(null, accuracyScores));
 
-    const li = {0: 'FBMessanger', 1: 'Instagram', 2: 'Invalid', 3: 'LINE', 4: 'Others', 5: 'Pairs', 6: 'Twitter'};
+    const li = {0: 'FBMessanger', 1: 'Instagram', 2: 'Invalid', 3: 'LINE', 4: 'Twitter'};
     console.log(li[maxAccuracy]);
 
     let c = 0;

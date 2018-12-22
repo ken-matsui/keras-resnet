@@ -1,13 +1,13 @@
 runtime: php55
+service: demo-resnet
 api_version: 1
 threadsafe: true
 
 handlers:
-- url: /demo
+- url: /
   static_files: index.html
   upload: index.html
 
 - url: /(.*)
   static_files: \1
   upload: (.*)
-
